@@ -36,22 +36,10 @@ UserSchema.pre('save', async function (next) {
   }
 });
 
-UserSchema.methods.comparePassword = function (candidatePassword) {
+UserSchema.methods.checkPassword = function (candidatePassword) {
   const user = this;
 
-  return new Promise((resolve, reject) => {
-    bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
-      if (err) {
-        return reject(err);
-      }
-
-      if (!isMatch) {
-        return resolve(false);
-      }
-
-      return resolve(true);
-    });
-  });
+  return bcrypt.compare(candidatePassword, user.password);
 };
 
 export default mongoose.model('User', UserSchema);
