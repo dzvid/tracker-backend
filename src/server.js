@@ -1,21 +1,17 @@
 import 'dotenv/config';
+
 import express from 'express';
 import mongoose from 'mongoose';
 
 import authRoutes from './routes/authRoutes';
 
+import requireAuth from './middlewares/requireAuth';
+
 const app = express();
-
-// Parses incoming requests with JSON payloads
-app.use(express.json());
-
-// Setup app routes
-app.use(authRoutes);
-
 const port = process.env.PORT || 3000;
-
 const mongoURL = process.env.MONGO_URL;
 
+// Setup mongo
 mongoose.connect(mongoURL, {
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -30,8 +26,18 @@ mongoose.connection.on('error', (err) => {
   console.error('Error connecting to mongo', err);
 });
 
+// Parses incoming requests with JSON payloads
+app.use(express.json());
+
+// Setup app routes
+app.use(authRoutes);
+
+// Setup middlewares
+app.use(requireAuth);
+
+// Setup authenticated app routes
 app.get('/', (req, res) => {
-  return res.json({ message: 'ok' });
+  return res.json({ user: req.userId });
 });
 
 app.listen(port, () => {
