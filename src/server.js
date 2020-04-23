@@ -4,6 +4,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 
 import authRoutes from './routes/authRoutes';
+import trackRoutes from './routes/trackRoutes';
 
 import requireAuth from './middlewares/requireAuth';
 
@@ -36,6 +37,8 @@ app.use(authRoutes);
 app.use(requireAuth);
 
 // Setup authenticated app routes
+app.use(trackRoutes);
+
 app.get('/', (req, res) => {
   return res.json({ user: req.userId });
 });
